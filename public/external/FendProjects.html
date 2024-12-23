@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Projects</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #212121;
+            color: #ffffff;
+        }
+
+        h1 {
+            margin: 20px 0;
+            color: #00bcd4;
+            font-size: 36px;
+        }
+
+        .project-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 50px;
+            margin: 20px;
+            width: 90%;
+            max-width: 1200px;
+        }
+
+        .project {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #333333;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 10px 10px 50px;
+            color: #ffffff;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 250px;
+            height: 250px;
+            cursor: pointer;
+        }
+
+        .project:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .project img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .project-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .remove-project {
+            font-size: 14px;
+            color: #f44336;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .remove-project:hover {
+            color: #d32f2f;
+        }
+
+        .add-project {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #00bcd4;
+            background-color: #333333;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        #addProjectModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #424242;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        #addProjectModal input,
+        #addProjectModal textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 1px solid #777;
+            border-radius: 4px;
+            background-color: #333333;
+            color: #ffffff;
+        }
+
+        #addProjectModal button {
+            padding: 10px 20px;
+            background-color: #00bcd4;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #addProjectModal button:hover {
+            background-color: #008ba3;
+        }
+
+        #modalOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <h1>FrontEnd Projects</h1>
+    <div class="project-container" id="projectContainer">
+        
+        <div class="project add-project" onclick="openModal()">+</div>
+    </div>
+
+    <div id="modalOverlay"></div>
+
+    <div id="addProjectModal">
+        <h2 style="color: #00bcd4;">Add Project</h2>
+        <form id="projectForm">
+            <input type="text" id="projectName" placeholder="Project Name" required>
+            <input type="url" id="githubLink" placeholder="GitHub Link" required>
+            <input type="file" id="projectImageFile" accept="image/*" required>
+            <button type="submit">Add</button>
+        </form>
+    </div>
+
+    <script>
+        const modal = document.getElementById('addProjectModal');
+        const overlay = document.getElementById('modalOverlay');
+        const form = document.getElementById('projectForm');
+
+        // Reset form fields each time modal opens
+        function openModal() {
+            // Reset form fields
+            form.reset();
+            modal.style.display = 'block';
+            overlay.style.display = 'block';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+
+        overlay.addEventListener('click', closeModal);
+
+        document.getElementById('projectForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const projectName = document.getElementById('projectName').value;
+            const githubLink = document.getElementById('githubLink').value;
+            const projectImageFile = document.getElementById('projectImageFile').files[0];
+
+            if (projectImageFile) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const projectContainer = document.getElementById('projectContainer');
+                    const newProject = document.createElement('div');
+                    newProject.className = 'project';
+
+                    newProject.innerHTML = `
+                        <a href="${githubLink}" target="_blank">
+                            <img src="${event.target.result}" alt="${projectName}">
+                            <div class="project-title">${projectName}</div>
+                        </a>
+                        <div class="remove-project" onclick="removeProject(this)">Remove</div>
+                    `;
+
+                    projectContainer.insertBefore(newProject, projectContainer.lastElementChild);
+
+                    closeModal();
+                };
+
+                reader.readAsDataURL(projectImageFile);
+            }
+        });
+
+        // Function to remove a project
+        function removeProject(button) {
+            const project = button.parentElement;
+            project.remove();
+        }
+    </script>
+</body>
+</html>
